@@ -59,3 +59,6 @@ war/node_modules/
 war/yarn-error.log
 .java-version
 .checkstyle
+
+# Compiled class file
+*.class
