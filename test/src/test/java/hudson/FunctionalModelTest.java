@@ -53,4 +53,38 @@ public class FunctionalModelTest {
         assertEquals("Build should be successful", Result.SUCCESS, build.getResult());
     }
 
+    @Test
+    public void testFailedState() throws Exception {
+        FreeStyleProject project = jenkinsRule.createFreeStyleProject();
+        project.getBuildersList().add(new hudson.tasks.Shell("exit 1"));
+        FreeStyleBuild build = jenkinsRule.assertBuildStatus(Result.FAILURE, project.scheduleBuild2(0).get());
+        assertEquals("Build should fail", Result.FAILURE, build.getResult());
+    }
+
+    @Test
+    public void testAbortedState() throws Exception {
+        FreeStyleProject project = jenkinsRule.createFreeStyleProject();
+        // Adjust the build step to ensure it does not fail on its own
+        project.getBuildersList().add(new hudson.tasks.Shell("sleep 60"));
+
+        FreeStyleBuild build = project.scheduleBuild2(0).waitForStart();
+
+        // Wait a bit to ensure the build has properly started
+        Thread.sleep(10000); // 10 seconds
+
+        // Check if the build is in progress and not already completed or failed
+        if (build.isBuilding()) {
+            // Attempt to abort the build
+            build.getExecutor().interrupt(Result.ABORTED);
+        } else {
+            // If the build is not building, log or handle this condition
+            System.out.println("Build was not in progress at the time of abort attempt");
+        }
+
+        // Wait for all activities to complete
+        jenkinsRule.waitUntilNoActivity();
+
+        // Assert the expected build result
+        assertEquals("Expected the build to be aborted", Result.ABORTED, build.getResult());
+    }
 }
