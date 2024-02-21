@@ -77,4 +77,37 @@ public class ExtraTestCases {
     private void dynamicLoadAndDisable(String plugin) throws IOException, InterruptedException, RestartRequiredException {
         PluginManagerUtil.dynamicLoad(plugin, r.jenkins, true);
     }
+    
+    @WithPlugin("htmlpublisher.jpi")
+    @Test
+    public void pluginListViaJSONApi() throws IOException {
+        net.sf.json.JSONObject response = r.getJSON("pluginManager/plugins").getJSONObject();
 
+        Assert.assertEquals("ok", response.getString("status"));
+        JSONArray data = response.getJSONArray("data");
+        assertThat(data, Matchers.not(Matchers.empty()));
+
+        JSONObject pluginInfo = data.getJSONObject(0);
+        Assert.assertNotNull(pluginInfo.getString("name"));
+        Assert.assertNotNull(pluginInfo.getString("title"));
+        Assert.assertNotNull(pluginInfo.getString("dependencies"));
+    }
+
+    @Test public void installFailPluginDisabledDependency() throws Exception {
+        {
+            dynamicLoadAndDisable("dependee-0.0.2.hpi");
+        }
+
+        {
+            dynamicLoad("depender-0.0.2.hpi");
+        }
+        assertThrows(ClassNotFoundException.class, () -> r.jenkins.getExtensionList("org.jenkinsci.plugins.dependencytest.dependee.DependeeExtensionPoint"));
+    }
+
+    @Test public void pluginInstallDisabledOptionalDependency() throws Exception {
+        {
+            dynamicLoadAndDisable("dependee-0.0.2.hpi");
+        }
+        assertThrows(IOException.class, () -> dynamicLoad("mandatory-depender-0.0.2.hpi"));
+    }
+}
