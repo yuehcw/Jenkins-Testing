@@ -1,0 +1,21 @@
+language: java
+jdk:
+  - openjdk11
+
+# Cache Maven dependencies to speed up the build
+cache:
+  directories:
+    - $HOME/.m2
+
+# Define the build stages
+jobs:
+  include:
+    - stage: build
+      name: "Build"
+      script:
+        - mvn clean install -B
+
+    - stage: test
+      name: "Run Tests"
+      script:
+        - mvn test -B
