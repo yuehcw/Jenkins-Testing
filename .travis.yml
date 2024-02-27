@@ -13,9 +13,9 @@ jobs:
     - stage: build
       name: "Build"
       script:
-        - mvn clean install -B
+        - mvn -am -pl war,bom -"DskipTests -Dspotbugs.skip" clean install
 
     - stage: test
       name: "Run Tests"
       script:
-        - mvn test -B
+        - mvn clean install -Plight-test
