@@ -187,6 +187,7 @@ THE SOFTWARE.
                     <exclude>org.kohsuke.stapler:stapler</exclude>
                     <exclude>org.kohsuke.stapler:stapler-groovy</exclude>
                     <exclude>org.kohsuke.stapler:stapler-jelly</exclude>
+                    <exclude>org.mockito:mockito-core</exclude>
                   </excludes>
                 </enforceBytecodeVersion>
               </rules>
