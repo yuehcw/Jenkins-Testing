@@ -29,7 +29,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.recipes.WithPlugin;
 
-public class ExtraTestCases {
+public class ImproveCoverage {
 
     @Rule public JenkinsRule r = PluginManagerUtil.newJenkinsRule();
     @Rule public TemporaryFolder tmp = new TemporaryFolder();
